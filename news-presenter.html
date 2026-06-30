@@ -1,0 +1,1103 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>সংবাদ উপস্থাপক</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Noto+Sans+Bengali:wght@300;400;500;600;700;800;900&family=Tiro+Bangla:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --surface: #111827;
+    --surface2: #1a2235;
+    --border: #2a3650;
+    --accent: #e8b84b;
+    --accent2: #3b82f6;
+    --text: #f0f4ff;
+    --text2: #8fa3c0;
+    --danger: #ef4444;
+    --success: #22c55e;
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; font-family: 'Hind Siliguri', 'Noto Sans Bengali', sans-serif; background: var(--bg); color: var(--text); }
+
+  /* ===== HOME PAGE ===== */
+  #page-home { display: flex; flex-direction: column; min-height: 100vh; }
+  .home-header { text-align: center; padding: 48px 24px 32px; }
+  .home-logo { font-size: 13px; letter-spacing: 4px; color: var(--accent); text-transform: uppercase; margin-bottom: 16px; }
+  .home-title { font-family: 'Noto Sans Bengali', sans-serif; font-size: clamp(28px, 6vw, 52px); font-weight: 800; line-height: 1.2; background: linear-gradient(135deg, #f0f4ff 0%, #e8b84b 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .home-sub { color: var(--text2); margin-top: 12px; font-size: 15px; }
+  .home-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 0 24px 48px; max-width: 800px; margin: 0 auto; width: 100%; }
+  @media(max-width: 500px) { .home-cards { grid-template-columns: 1fr; } }
+  .mode-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 32px 24px; cursor: pointer; transition: all 0.25s; position: relative; overflow: hidden; }
+  .mode-card::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, var(--accent) 0%, transparent 60%); opacity: 0; transition: opacity 0.3s; }
+  .mode-card:hover { border-color: var(--accent); transform: translateY(-4px); box-shadow: 0 20px 40px rgba(232,184,75,0.15); }
+  .mode-card:hover::before { opacity: 0.05; }
+  .mode-card .icon { font-size: 40px; margin-bottom: 16px; display: block; }
+  .mode-card h2 { font-size: 20px; font-weight: 700; margin-bottom: 10px; color: var(--accent); }
+  .mode-card p { font-size: 14px; color: var(--text2); line-height: 1.7; }
+  .mode-card .badge { display: inline-block; background: var(--accent); color: #000; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; margin-top: 16px; letter-spacing: 1px; }
+
+  /* ===== EDITOR PAGES ===== */
+  .page { display: none; flex-direction: column; min-height: 100vh; }
+  .page.active { display: flex; }
+  
+  .editor-header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 14px 20px; display: flex; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 100; }
+  .back-btn { background: none; border: 1px solid var(--border); color: var(--text); padding: 7px 14px; border-radius: var(--radius-sm); cursor: pointer; font-family: inherit; font-size: 13px; transition: all 0.2s; white-space: nowrap; }
+  .back-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .editor-title { font-size: 16px; font-weight: 700; color: var(--accent); flex: 1; }
+  
+  .editor-body { flex: 1; padding: 20px; max-width: 900px; margin: 0 auto; width: 100%; }
+  
+  /* Video Size Selector */
+  .section-label { font-size: 12px; font-weight: 600; letter-spacing: 2px; color: var(--accent); text-transform: uppercase; margin-bottom: 12px; }
+  .size-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 24px; }
+  @media(max-width: 480px) { .size-grid { grid-template-columns: repeat(2, 1fr); } }
+  .size-btn { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 6px; cursor: pointer; text-align: center; transition: all 0.2s; color: var(--text); font-family: inherit; }
+  .size-btn.active { border-color: var(--accent); background: rgba(232,184,75,0.1); }
+  .size-btn .size-icon { display: block; font-size: 18px; margin-bottom: 4px; }
+  .size-btn .size-name { font-size: 12px; font-weight: 600; display: block; }
+  .size-btn .size-dim { font-size: 10px; color: var(--text2); display: block; margin-top: 2px; }
+
+  /* Text Input */
+  .input-area { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 20px; }
+  .input-toolbar { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+  .tool-btn { background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 8px 14px; border-radius: var(--radius-sm); cursor: pointer; font-family: inherit; font-size: 13px; transition: all 0.2s; }
+  .tool-btn:hover { border-color: var(--accent2); color: var(--accent2); }
+  .tool-btn.primary { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 700; }
+  .tool-btn.primary:hover { background: #f5c842; }
+  .tool-btn.danger { border-color: var(--danger); color: var(--danger); }
+  .tool-btn.danger:hover { background: rgba(239,68,68,0.1); }
+  textarea.main-input { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text); padding: 14px; font-family: 'Hind Siliguri', sans-serif; font-size: 15px; line-height: 1.8; resize: vertical; min-height: 180px; outline: none; transition: border-color 0.2s; }
+  textarea.main-input:focus { border-color: var(--accent2); }
+  .char-count { font-size: 11px; color: var(--text2); text-align: right; margin-top: 6px; }
+
+  /* Preview toggle */
+  .preview-toggle { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+  .toggle-switch { position: relative; width: 44px; height: 24px; }
+  .toggle-switch input { opacity: 0; width: 0; height: 0; }
+  .toggle-track { position: absolute; inset: 0; background: var(--border); border-radius: 12px; cursor: pointer; transition: 0.3s; }
+  .toggle-track::after { content: ''; position: absolute; left: 3px; top: 3px; width: 18px; height: 18px; background: #fff; border-radius: 50%; transition: 0.3s; }
+  input:checked + .toggle-track { background: var(--accent2); }
+  input:checked + .toggle-track::after { transform: translateX(20px); }
+  .toggle-label { font-size: 13px; color: var(--text2); }
+
+  /* Live Preview */
+  .preview-wrapper { margin-bottom: 20px; }
+  .preview-frame { background: #000; border-radius: var(--radius); overflow: hidden; position: relative; width: 100%; }
+  .preview-content { padding: 24px; overflow: hidden; }
+
+  /* Slide controls (visible section) */
+  .slide-controls { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 20px; }
+  .control-row { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+  .control-row:last-child { margin-bottom: 0; }
+  .control-label { font-size: 13px; color: var(--text2); min-width: 130px; }
+  .control-value { font-size: 13px; color: var(--accent); min-width: 35px; text-align: right; }
+  input[type=range] { flex: 1; accent-color: var(--accent); cursor: pointer; }
+  .transition-grid { display: flex; flex-wrap: wrap; gap: 6px; flex: 1; }
+  .trans-btn { background: var(--surface2); border: 1px solid var(--border); color: var(--text2); padding: 5px 10px; border-radius: 6px; cursor: pointer; font-family: inherit; font-size: 12px; transition: all 0.2s; }
+  .trans-btn.active { border-color: var(--accent2); color: var(--accent2); background: rgba(59,130,246,0.1); }
+
+  /* Advanced Settings */
+  .adv-toggle { background: none; border: 1px solid var(--border); color: var(--text2); padding: 10px 16px; border-radius: var(--radius-sm); cursor: pointer; font-family: inherit; font-size: 13px; width: 100%; text-align: left; transition: all 0.2s; display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+  .adv-toggle:hover { border-color: var(--accent); color: var(--accent); }
+  .adv-panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 20px; display: none; }
+  .adv-panel.open { display: block; }
+  .adv-section { margin-bottom: 20px; }
+  .adv-section:last-child { margin-bottom: 0; }
+  .adv-section-title { font-size: 12px; font-weight: 600; color: var(--accent); letter-spacing: 1px; margin-bottom: 12px; text-transform: uppercase; }
+  
+  /* BG mode tabs */
+  .bg-tabs { display: flex; gap: 6px; margin-bottom: 14px; }
+  .bg-tab { background: var(--surface2); border: 1px solid var(--border); color: var(--text2); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-family: inherit; font-size: 12px; transition: all 0.2s; }
+  .bg-tab.active { border-color: var(--accent); color: var(--accent); background: rgba(232,184,75,0.1); }
+  .color-swatches { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+  .swatch { width: 30px; height: 30px; border-radius: 6px; cursor: pointer; border: 2px solid transparent; transition: all 0.2s; }
+  .swatch.active { border-color: #fff; transform: scale(1.1); }
+  .color-picker-row { display: flex; align-items: center; gap: 8px; }
+  .color-picker-row label { font-size: 12px; color: var(--text2); }
+  input[type=color] { width: 36px; height: 30px; border: 1px solid var(--border); border-radius: 6px; cursor: pointer; padding: 2px; background: var(--surface2); }
+  .gradient-row { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+  .grad-angle { flex: 1; min-width: 80px; accent-color: var(--accent); cursor: pointer; }
+  .file-upload { background: var(--surface2); border: 1px dashed var(--border); border-radius: var(--radius-sm); padding: 20px; text-align: center; cursor: pointer; transition: all 0.2s; }
+  .file-upload:hover { border-color: var(--accent2); }
+  .file-upload input { display: none; }
+  .font-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
+  @media(max-width:400px) { .font-grid { grid-template-columns: 1fr; } }
+  .font-btn { background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 10px; border-radius: 6px; cursor: pointer; text-align: center; transition: all 0.2s; font-size: 14px; }
+  .font-btn.active { border-color: var(--accent); background: rgba(232,184,75,0.1); }
+  .save-row { display: flex; gap: 8px; margin-top: 16px; }
+  .save-btn { flex: 1; background: var(--accent); color: #000; border: none; padding: 10px; border-radius: var(--radius-sm); cursor: pointer; font-family: inherit; font-weight: 700; font-size: 14px; transition: all 0.2s; }
+  .save-btn:hover { background: #f5c842; }
+  .reset-btn { background: none; border: 1px solid var(--border); color: var(--text2); padding: 10px 16px; border-radius: var(--radius-sm); cursor: pointer; font-family: inherit; font-size: 14px; transition: all 0.2s; }
+  .reset-btn:hover { border-color: var(--danger); color: var(--danger); }
+
+  /* Start broadcast button */
+  .broadcast-btn { width: 100%; background: linear-gradient(135deg, #e8b84b, #f59e0b); color: #000; border: none; padding: 16px; border-radius: var(--radius); cursor: pointer; font-family: inherit; font-size: 18px; font-weight: 800; margin-top: 8px; margin-bottom: 32px; transition: all 0.2s; letter-spacing: 1px; }
+  .broadcast-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(232,184,75,0.4); }
+
+  /* ===== PLAYER ===== */
+  #player-overlay { display: none; position: fixed; inset: 0; background: #000; z-index: 1000; flex-direction: column; }
+  #player-overlay.active { display: flex; }
+  .player-top { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: rgba(0,0,0,0.8); position: absolute; top: 0; left: 0; right: 0; z-index: 10; transition: opacity 0.4s; }
+  .player-top.hidden { opacity: 0; pointer-events: none; }
+  .player-stage { flex: 1; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+  .player-frame { position: relative; overflow: hidden; box-shadow: 0 0 60px rgba(0,0,0,0.8); }
+  .player-content { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+  
+  /* Scroll player */
+  .scroll-container { position: absolute; width: 100%; overflow: hidden; top: 0; bottom: 0; }
+  .scroll-track { position: absolute; width: 100%; padding: 0 8%; }
+  
+  /* Slide player */
+  .slide-wrapper { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+  .slide-page { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: 8% 10%; opacity: 0; transition: all 0.5s ease; pointer-events: none; }
+  .slide-page.active { opacity: 1; pointer-events: auto; }
+  .slide-page.exit-left { transform: translateX(-100%); }
+  .slide-page.exit-right { transform: translateX(100%); }
+  .slide-page.exit-top { transform: translateY(-100%); }
+  .slide-page.exit-zoom { transform: scale(1.2); opacity: 0; }
+  .slide-page.exit-flip { transform: perspective(600px) rotateY(90deg); }
+  .slide-text-inner { width: 100%; }
+  
+  /* Player controls */
+  .player-controls { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); padding: 12px 16px; transition: opacity 0.4s; }
+  .player-controls.hidden { opacity: 0; pointer-events: none; }
+  .ctrl-row { display: flex; align-items: center; gap: 10px; }
+  .ctrl-btn { background: none; border: 1px solid rgba(255,255,255,0.2); color: #fff; width: 38px; height: 38px; border-radius: 50%; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+  .ctrl-btn:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.5); }
+  .speed-control { display: flex; align-items: center; gap: 8px; flex: 1; }
+  .speed-label { font-size: 11px; color: rgba(255,255,255,0.5); white-space: nowrap; }
+  .speed-slider { flex: 1; accent-color: var(--accent); }
+  
+  /* Slide dots + progress */
+  .slide-indicators { text-align: center; margin-bottom: 8px; }
+  .slide-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.3); margin: 0 3px; transition: all 0.3s; }
+  .slide-dot.active { background: var(--accent); width: 18px; border-radius: 3px; }
+  .progress-bar-track { height: 3px; background: rgba(255,255,255,0.15); border-radius: 2px; overflow: hidden; margin-bottom: 8px; }
+  .progress-bar-fill { height: 100%; background: var(--accent); border-radius: 2px; transition: width linear; }
+
+  /* Rendered markdown in player */
+  .rendered h1 { font-size: 1.6em; font-weight: 800; margin-bottom: 0.4em; line-height: 1.3; }
+  .rendered h2 { font-size: 1.3em; font-weight: 700; margin-bottom: 0.3em; line-height: 1.3; }
+  .rendered p { margin-bottom: 0.6em; line-height: 1.8; }
+  .rendered strong { font-weight: 700; }
+  .rendered em { font-style: italic; }
+  .rendered ul { list-style: none; padding: 0; margin-bottom: 0.6em; }
+  .rendered ul li { padding-left: 1.2em; position: relative; margin-bottom: 0.3em; line-height: 1.7; }
+  .rendered ul li::before { content: '▸'; position: absolute; left: 0; color: var(--accent); }
+  .rendered blockquote { border-left: 3px solid var(--accent); padding-left: 1em; font-style: italic; opacity: 0.85; margin-bottom: 0.6em; }
+  .rendered .spacer { height: 0.8em; }
+
+  /* Paste help */
+  .paste-help { background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.3); border-radius: var(--radius-sm); padding: 10px 14px; font-size: 12px; color: var(--text2); margin-top: 8px; display: none; }
+  .paste-help.show { display: block; }
+
+  /* Scroll speed in scroll mode */
+  .scroll-speed-row { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 20px; }
+  .spacing-row { margin-top: 14px; }
+</style>
+</head>
+<body>
+
+<!-- ===== HOME PAGE ===== -->
+<div id="page-home">
+  <div class="home-header">
+    <div class="home-logo">📡 সংবাদ উপস্থাপক</div>
+    <h1 class="home-title">ভিডিও টেক্সট<br>প্রদর্শক</h1>
+    <p class="home-sub">আপনার লেখাকে পেশাদার সংবাদ চ্যানেলের মতো উপস্থাপন করুন</p>
+  </div>
+  <div class="home-cards">
+    <div class="mode-card" onclick="goTo('scroll')">
+      <span class="icon">📜</span>
+      <h2>স্ক্রল টেক্সট</h2>
+      <p>লেখা উপর থেকে নিচে ধীরে ধীরে স্ক্রল হয়ে প্রদর্শিত হবে — নিউজ চ্যানেলের ক্যাপশনের মতো, একটানা প্রবাহমান।</p>
+      <span class="badge">SCROLL</span>
+    </div>
+    <div class="mode-card" onclick="goTo('slide')">
+      <span class="icon">🖼️</span>
+      <h2>স্লাইড শো</h2>
+      <p>লেখা স্বয়ংক্রিয়ভাবে একাধিক স্লাইডে ভাগ হয়ে একে একে প্রদর্শিত হবে — পড়তে সহজ, স্থির উপস্থাপনা।</p>
+      <span class="badge">SLIDES</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SCROLL PAGE ===== -->
+<div id="page-scroll" class="page">
+  <div class="editor-header">
+    <button class="back-btn" onclick="goTo('home')">← হোম</button>
+    <div class="editor-title">📜 স্ক্রল টেক্সট</div>
+  </div>
+  <div class="editor-body">
+    <!-- Video size -->
+    <div class="section-label">ভিডিও সাইজ</div>
+    <div class="size-grid" id="scroll-size-grid">
+      <button class="size-btn active" data-mode="scroll" data-size="shorts" onclick="setSize('scroll','shorts',this)">
+        <span class="size-icon">📱</span><span class="size-name">Shorts</span><span class="size-dim">9:16</span>
+      </button>
+      <button class="size-btn" data-mode="scroll" data-size="full" onclick="setSize('scroll','full',this)">
+        <span class="size-icon">🖥️</span><span class="size-name">Full Video</span><span class="size-dim">16:9</span>
+      </button>
+      <button class="size-btn" data-mode="scroll" data-size="square" onclick="setSize('scroll','square',this)">
+        <span class="size-icon">⬛</span><span class="size-name">Square</span><span class="size-dim">1:1</span>
+      </button>
+      <button class="size-btn" data-mode="scroll" data-size="portrait" onclick="setSize('scroll','portrait',this)">
+        <span class="size-icon">🖼️</span><span class="size-name">Portrait</span><span class="size-dim">4:5</span>
+      </button>
+    </div>
+
+    <!-- Text input -->
+    <div class="input-area">
+      <div class="section-label">লেখা</div>
+      <div class="input-toolbar">
+        <button class="tool-btn primary" onclick="pasteText('scroll')">📋 পেস্ট করুন</button>
+        <button class="tool-btn danger" onclick="clearText('scroll')">🗑️ মুছুন</button>
+      </div>
+      <textarea class="main-input" id="scroll-input" placeholder="এখানে লেখা টাইপ করুন অথবা পেস্ট করুন...&#10;&#10;মার্কডাউন সাপোর্ট:&#10;**বোল্ড** *ইটালিক* # হেডিং ## উপ-শিরোনাম&#10;> উক্তি  * বুলেট পয়েন্ট" oninput="onTextInput('scroll')"></textarea>
+      <div class="char-count" id="scroll-char">০ অক্ষর</div>
+      <div class="paste-help" id="scroll-paste-help">
+        📌 ক্লিপবোর্ড পারমিশন পাওয়া যায়নি। দয়া করে ম্যানুয়ালি পেস্ট করুন: টেক্সট বক্সে ক্লিক করুন → দীর্ঘ চাপ দিন → "Paste" নির্বাচন করুন।
+      </div>
+    </div>
+
+    <!-- Preview toggle -->
+    <div class="preview-toggle">
+      <label class="toggle-switch">
+        <input type="checkbox" id="scroll-preview-toggle" onchange="togglePreview('scroll', this.checked)">
+        <span class="toggle-track"></span>
+      </label>
+      <span class="toggle-label">লাইভ প্রিভিউ দেখান</span>
+    </div>
+    <div class="preview-wrapper" id="scroll-preview-wrap" style="display:none">
+      <div class="section-label">প্রিভিউ</div>
+      <div class="preview-frame" id="scroll-preview-frame">
+        <div class="preview-content rendered" id="scroll-preview-content" style="font-size:13px; max-height:220px; overflow:hidden; color:#fff;"></div>
+      </div>
+    </div>
+
+    <!-- Scroll speed -->
+    <div class="scroll-speed-row">
+      <div class="section-label">স্ক্রল নিয়ন্ত্রণ</div>
+      <div class="control-row">
+        <span class="control-label">গতি</span>
+        <input type="range" min="1" max="10" value="3" id="scroll-speed" oninput="updateScrollSettings()">
+        <span class="control-value" id="scroll-speed-val">৩</span>
+      </div>
+      <div class="control-row spacing-row">
+        <span class="control-label">লাইনের ফাঁক</span>
+        <input type="range" min="0" max="5" value="2" id="scroll-spacing" oninput="updateScrollSettings()">
+        <span class="control-value" id="scroll-spacing-val">২</span>
+      </div>
+    </div>
+
+    <!-- Advanced settings -->
+    <button class="adv-toggle" onclick="toggleAdv('scroll')">
+      ⚙️ উন্নত সেটিংস <span id="scroll-adv-arrow">▼</span>
+    </button>
+    <div class="adv-panel" id="scroll-adv-panel">
+      <div id="scroll-adv-content"></div>
+      <div class="save-row">
+        <button class="save-btn" onclick="saveSettings('scroll')">💾 সেভ করুন</button>
+        <button class="reset-btn" onclick="resetSettings('scroll')">↺ ডিফল্ট</button>
+      </div>
+    </div>
+
+    <button class="broadcast-btn" onclick="startBroadcast('scroll')">▶ সম্প্রচার শুরু করুন</button>
+  </div>
+</div>
+
+<!-- ===== SLIDE PAGE ===== -->
+<div id="page-slide" class="page">
+  <div class="editor-header">
+    <button class="back-btn" onclick="goTo('home')">← হোম</button>
+    <div class="editor-title">🖼️ স্লাইড শো</div>
+  </div>
+  <div class="editor-body">
+    <!-- Video size -->
+    <div class="section-label">ভিডিও সাইজ</div>
+    <div class="size-grid" id="slide-size-grid">
+      <button class="size-btn active" data-mode="slide" data-size="shorts" onclick="setSize('slide','shorts',this)">
+        <span class="size-icon">📱</span><span class="size-name">Shorts</span><span class="size-dim">9:16</span>
+      </button>
+      <button class="size-btn" data-mode="slide" data-size="full" onclick="setSize('slide','full',this)">
+        <span class="size-icon">🖥️</span><span class="size-name">Full Video</span><span class="size-dim">16:9</span>
+      </button>
+      <button class="size-btn" data-mode="slide" data-size="square" onclick="setSize('slide','square',this)">
+        <span class="size-icon">⬛</span><span class="size-name">Square</span><span class="size-dim">1:1</span>
+      </button>
+      <button class="size-btn" data-mode="slide" data-size="portrait" onclick="setSize('slide','portrait',this)">
+        <span class="size-icon">🖼️</span><span class="size-name">Portrait</span><span class="size-dim">4:5</span>
+      </button>
+    </div>
+
+    <!-- Text input -->
+    <div class="input-area">
+      <div class="section-label">লেখা</div>
+      <div class="input-toolbar">
+        <button class="tool-btn primary" onclick="pasteText('slide')">📋 পেস্ট করুন</button>
+        <button class="tool-btn danger" onclick="clearText('slide')">🗑️ মুছুন</button>
+      </div>
+      <textarea class="main-input" id="slide-input" placeholder="এখানে লেখা টাইপ করুন অথবা পেস্ট করুন..." oninput="onTextInput('slide')"></textarea>
+      <div class="char-count" id="slide-char">০ অক্ষর</div>
+      <div class="paste-help" id="slide-paste-help">
+        📌 ক্লিপবোর্ড পারমিশন পাওয়া যায়নি। দয়া করে ম্যানুয়ালি পেস্ট করুন: টেক্সট বক্সে ক্লিক করুন → দীর্ঘ চাপ দিন → "Paste" নির্বাচন করুন।
+      </div>
+    </div>
+
+    <!-- Preview toggle -->
+    <div class="preview-toggle">
+      <label class="toggle-switch">
+        <input type="checkbox" id="slide-preview-toggle" onchange="togglePreview('slide', this.checked)">
+        <span class="toggle-track"></span>
+      </label>
+      <span class="toggle-label">লাইভ প্রিভিউ দেখান</span>
+    </div>
+    <div class="preview-wrapper" id="slide-preview-wrap" style="display:none">
+      <div class="section-label">প্রিভিউ (স্লাইড ১)</div>
+      <div class="preview-frame" id="slide-preview-frame">
+        <div class="preview-content rendered" id="slide-preview-content" style="font-size:13px; max-height:220px; overflow:hidden; color:#fff;"></div>
+      </div>
+    </div>
+
+    <!-- Slide controls (visible) -->
+    <div class="slide-controls">
+      <div class="section-label">স্লাইড সেটিংস</div>
+      <div class="control-row">
+        <span class="control-label">প্রতি স্লাইড (সেকেন্ড)</span>
+        <input type="range" min="2" max="20" value="6" id="slide-duration" oninput="updateSlideSettings()">
+        <span class="control-value" id="slide-duration-val">৬s</span>
+      </div>
+      <div class="control-row">
+        <span class="control-label">স্লাইডে অক্ষর সংখ্যা</span>
+        <input type="range" min="80" max="500" step="20" value="200" id="slide-chars" oninput="updateSlideSettings()">
+        <span class="control-value" id="slide-chars-val">২০০</span>
+      </div>
+      <div class="control-row" style="align-items:flex-start">
+        <span class="control-label" style="padding-top:4px">ট্রানজিশন</span>
+        <div class="transition-grid">
+          <button class="trans-btn active" onclick="setTransition('fade', this)">মিলিয়ে যাওয়া</button>
+          <button class="trans-btn" onclick="setTransition('slide-left', this)">পাশ থেকে</button>
+          <button class="trans-btn" onclick="setTransition('zoom', this)">জুম</button>
+          <button class="trans-btn" onclick="setTransition('slide-top', this)">উপর থেকে</button>
+          <button class="trans-btn" onclick="setTransition('flip', this)">ফ্লিপ</button>
+          <button class="trans-btn" onclick="setTransition('none', this)">তাৎক্ষণিক</button>
+        </div>
+      </div>
+      <div style="margin-top:8px; font-size:12px; color:var(--text2)" id="slide-count-info">স্লাইড তৈরি হবে...</div>
+    </div>
+
+    <!-- Advanced settings -->
+    <button class="adv-toggle" onclick="toggleAdv('slide')">
+      ⚙️ উন্নত সেটিংস <span id="slide-adv-arrow">▼</span>
+    </button>
+    <div class="adv-panel" id="slide-adv-panel">
+      <div id="slide-adv-content"></div>
+      <div class="save-row">
+        <button class="save-btn" onclick="saveSettings('slide')">💾 সেভ করুন</button>
+        <button class="reset-btn" onclick="resetSettings('slide')">↺ ডিফল্ট</button>
+      </div>
+    </div>
+
+    <button class="broadcast-btn" onclick="startBroadcast('slide')">▶ সম্প্রচার শুরু করুন</button>
+  </div>
+</div>
+
+<!-- ===== PLAYER OVERLAY ===== -->
+<div id="player-overlay">
+  <div class="player-top" id="player-top">
+    <button class="ctrl-btn" onclick="closePlayer()" title="বন্ধ করুন">✕</button>
+    <span style="flex:1; font-size:13px; color:rgba(255,255,255,0.6)" id="player-title-label"></span>
+    <button class="ctrl-btn" onclick="toggleFullscreen()" title="পূর্ণ পর্দা">⛶</button>
+  </div>
+  <div class="player-stage" id="player-stage">
+    <div class="player-frame" id="player-frame">
+      <!-- Scroll content -->
+      <div id="scroll-player" style="display:none; position:absolute; inset:0">
+        <div class="scroll-container" id="scroll-container">
+          <div class="scroll-track rendered" id="scroll-track"></div>
+        </div>
+      </div>
+      <!-- Slide content -->
+      <div id="slide-player" style="display:none; position:absolute; inset:0">
+        <div class="slide-wrapper" id="slide-wrapper"></div>
+      </div>
+    </div>
+  </div>
+  <div class="player-controls" id="player-controls">
+    <!-- Scroll controls -->
+    <div id="scroll-ctrl-panel" style="display:none">
+      <div class="ctrl-row">
+        <button class="ctrl-btn" id="scroll-play-btn" onclick="toggleScrollPlay()">⏸</button>
+        <div class="speed-control">
+          <span class="speed-label">গতি</span>
+          <input type="range" class="speed-slider" min="1" max="10" value="3" id="player-scroll-speed" oninput="updatePlayerScrollSpeed(this.value)">
+        </div>
+        <span style="font-size:11px;color:rgba(255,255,255,0.4)">লুপ চালু</span>
+      </div>
+    </div>
+    <!-- Slide controls -->
+    <div id="slide-ctrl-panel" style="display:none">
+      <div class="slide-indicators" id="slide-dots"></div>
+      <div class="progress-bar-track"><div class="progress-bar-fill" id="progress-fill" style="width:0%"></div></div>
+      <div class="ctrl-row">
+        <button class="ctrl-btn" onclick="slidePrev()">⏮</button>
+        <button class="ctrl-btn" id="slide-play-btn" onclick="toggleSlidePlay()">⏸</button>
+        <button class="ctrl-btn" onclick="slideNext()">⏭</button>
+        <span style="flex:1"></span>
+        <span style="font-size:11px;color:rgba(255,255,255,0.4)" id="slide-counter">১/১</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== STATE =====
+const state = {
+  scroll: {
+    size: 'shorts',
+    bgMode: 'solid',
+    bgColor: '#0a0e1a',
+    bgGrad1: '#0a0e1a', bgGrad2: '#1a2235', bgGradAngle: 135,
+    bgImage: null,
+    bgDarken: 0.5,
+    textColor: '#ffffff',
+    fontSize: 28,
+    fontFamily: 'Hind Siliguri',
+    speed: 3,
+    spacing: 2,
+  },
+  slide: {
+    size: 'shorts',
+    bgMode: 'solid',
+    bgColor: '#0a0e1a',
+    bgGrad1: '#0a0e1a', bgGrad2: '#1a2235', bgGradAngle: 135,
+    bgImage: null,
+    bgDarken: 0.5,
+    textColor: '#ffffff',
+    fontSize: 28,
+    fontFamily: 'Hind Siliguri',
+    duration: 6,
+    charsPerSlide: 200,
+    transition: 'fade',
+  }
+};
+
+const defaults = JSON.parse(JSON.stringify(state));
+
+const sizeDefs = {
+  shorts:  { ratio: 9/16,  label: 'Shorts (9:16)' },
+  full:    { ratio: 16/9,  label: 'Full Video (16:9)' },
+  square:  { ratio: 1,     label: 'Square (1:1)' },
+  portrait:{ ratio: 4/5,   label: 'Portrait (4:5)' },
+};
+
+const bgPresets = ['#0a0e1a','#1a1a2e','#16213e','#0f3460','#1b1b1b','#2d1b69','#800000','#003300'];
+const textPresets = ['#ffffff','#f0f4ff','#ffd700','#e8b84b','#ff6b6b','#90ee90','#00bfff','#ffb6c1'];
+const fonts = [
+  { name: 'Hind Siliguri', label: 'হিন্দ সিলিগুড়ি' },
+  { name: 'Noto Sans Bengali', label: 'নোটো বাংলা' },
+  { name: 'Tiro Bangla', label: 'তিরো বাংলা' },
+];
+
+// ===== NAVIGATION =====
+function goTo(page) {
+  document.getElementById('page-home').style.display = page === 'home' ? 'flex' : 'none';
+  document.getElementById('page-scroll').classList.toggle('active', page === 'scroll');
+  document.getElementById('page-slide').classList.toggle('active', page === 'slide');
+  if (page === 'scroll' || page === 'slide') {
+    renderAdvPanel(page);
+    loadSettings(page);
+  }
+}
+
+// ===== SIZE =====
+function setSize(mode, size, el) {
+  state[mode].size = size;
+  document.querySelectorAll(`[data-mode="${mode}"]`).forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  updatePreviewFrame(mode);
+}
+
+function updatePreviewFrame(mode) {
+  const frame = document.getElementById(`${mode}-preview-frame`);
+  if (!frame) return;
+  const ratio = sizeDefs[state[mode].size].ratio;
+  applyFrameStyle(frame, state[mode]);
+  frame.style.aspectRatio = ratio;
+  frame.style.maxHeight = '260px';
+  frame.style.width = ratio >= 1 ? '100%' : `${260 * ratio}px`;
+}
+
+function applyFrameStyle(frame, s) {
+  if (s.bgMode === 'solid') {
+    frame.style.background = s.bgColor;
+  } else if (s.bgMode === 'gradient') {
+    frame.style.background = `linear-gradient(${s.bgGradAngle}deg, ${s.bgGrad1}, ${s.bgGrad2})`;
+  } else if (s.bgMode === 'image' && s.bgImage) {
+    frame.style.background = `linear-gradient(rgba(0,0,0,${s.bgDarken}), rgba(0,0,0,${s.bgDarken})), url('${s.bgImage}') center/cover`;
+  }
+}
+
+// ===== TEXT INPUT =====
+function pasteText(mode) {
+  const ta = document.getElementById(`${mode}-input`);
+  if (navigator.clipboard && navigator.clipboard.readText) {
+    navigator.clipboard.readText().then(t => {
+      ta.value = t;
+      onTextInput(mode);
+      document.getElementById(`${mode}-paste-help`).classList.remove('show');
+    }).catch(() => showPasteHelp(mode));
+  } else {
+    showPasteHelp(mode);
+  }
+}
+function showPasteHelp(mode) {
+  document.getElementById(`${mode}-paste-help`).classList.add('show');
+  document.getElementById(`${mode}-input`).focus();
+}
+function clearText(mode) {
+  document.getElementById(`${mode}-input`).value = '';
+  onTextInput(mode);
+}
+function onTextInput(mode) {
+  const val = document.getElementById(`${mode}-input`).value;
+  document.getElementById(`${mode}-char`).textContent = `${toBn(val.length)} অক্ষর`;
+  updatePreview(mode);
+  if (mode === 'slide') updateSlideCount();
+}
+
+// ===== MARKDOWN PARSER =====
+function parseMarkdown(text) {
+  const lines = text.split('\n');
+  let html = '';
+  for (let i = 0; i < lines.length; i++) {
+    let line = lines[i];
+    if (line.trim() === '') {
+      html += '<div class="spacer"></div>';
+      continue;
+    }
+    if (line.startsWith('# ')) {
+      html += `<h1>${inlineMd(line.slice(2))}</h1>`;
+    } else if (line.startsWith('## ')) {
+      html += `<h2>${inlineMd(line.slice(3))}</h2>`;
+    } else if (line.startsWith('> ')) {
+      html += `<blockquote>${inlineMd(line.slice(2))}</blockquote>`;
+    } else if (line.match(/^[\*\-] /)) {
+      html += `<ul><li>${inlineMd(line.slice(2))}</li></ul>`;
+    } else {
+      html += `<p>${inlineMd(line)}</p>`;
+    }
+  }
+  return html;
+}
+
+function inlineMd(text) {
+  return text
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>');
+}
+
+// ===== PREVIEW =====
+function togglePreview(mode, show) {
+  const wrap = document.getElementById(`${mode}-preview-wrap`);
+  wrap.style.display = show ? 'block' : 'none';
+  if (show) { updatePreviewFrame(mode); updatePreview(mode); }
+}
+
+function updatePreview(mode) {
+  const tog = document.getElementById(`${mode}-preview-toggle`);
+  if (!tog || !tog.checked) return;
+  const text = document.getElementById(`${mode}-input`).value;
+  const html = parseMarkdown(text);
+  const cont = document.getElementById(`${mode}-preview-content`);
+  cont.innerHTML = html;
+  const s = state[mode];
+  cont.style.color = s.textColor;
+  cont.style.fontFamily = s.fontFamily + ', sans-serif';
+  cont.style.fontSize = Math.max(11, s.fontSize * 0.45) + 'px';
+  applyFrameStyle(document.getElementById(`${mode}-preview-frame`), s);
+}
+
+// ===== SCROLL SETTINGS =====
+function updateScrollSettings() {
+  state.scroll.speed = +document.getElementById('scroll-speed').value;
+  state.scroll.spacing = +document.getElementById('scroll-spacing').value;
+  document.getElementById('scroll-speed-val').textContent = toBn(state.scroll.speed);
+  document.getElementById('scroll-spacing-val').textContent = toBn(state.scroll.spacing);
+}
+
+// ===== SLIDE SETTINGS =====
+let currentTransition = 'fade';
+function setTransition(t, el) {
+  currentTransition = t;
+  state.slide.transition = t;
+  document.querySelectorAll('.trans-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+}
+function updateSlideSettings() {
+  state.slide.duration = +document.getElementById('slide-duration').value;
+  state.slide.charsPerSlide = +document.getElementById('slide-chars').value;
+  document.getElementById('slide-duration-val').textContent = toBn(state.slide.duration) + 's';
+  document.getElementById('slide-chars-val').textContent = toBn(state.slide.charsPerSlide);
+  updateSlideCount();
+  updatePreview('slide');
+}
+function updateSlideCount() {
+  const text = document.getElementById('slide-input').value;
+  if (!text.trim()) { document.getElementById('slide-count-info').textContent = 'স্লাইড তৈরি হবে...'; return; }
+  const slides = splitIntoSlides(text, state.slide.charsPerSlide);
+  document.getElementById('slide-count-info').textContent = `মোট ${toBn(slides.length)} টি স্লাইড তৈরি হবে`;
+  // update preview with first slide
+  const tog = document.getElementById('slide-preview-toggle');
+  if (tog && tog.checked) {
+    const cont = document.getElementById('slide-preview-content');
+    cont.innerHTML = parseMarkdown(slides[0] || '');
+  }
+}
+
+function splitIntoSlides(text, maxChars) {
+  const paragraphs = text.split(/\n\n+/);
+  const slides = [];
+  let current = '';
+  for (const para of paragraphs) {
+    if (!para.trim()) continue;
+    const lines = para.split('\n');
+    for (const line of lines) {
+      const add = (current ? '\n' : '') + line;
+      if (current.length + add.length > maxChars && current.length > 0) {
+        slides.push(current.trim());
+        current = line;
+      } else {
+        current += add;
+      }
+    }
+    if (current.length + 2 > maxChars) {
+      slides.push(current.trim());
+      current = '';
+    } else {
+      current += '\n';
+    }
+  }
+  if (current.trim()) slides.push(current.trim());
+  return slides.length ? slides : [''];
+}
+
+// ===== ADVANCED PANEL =====
+function renderAdvPanel(mode) {
+  const s = state[mode];
+  const container = document.getElementById(`${mode}-adv-content`);
+  container.innerHTML = `
+    <div class="adv-section">
+      <div class="adv-section-title">ব্যাকগ্রাউন্ড</div>
+      <div class="bg-tabs">
+        <button class="bg-tab ${s.bgMode==='solid'?'active':''}" onclick="setBgMode('${mode}','solid',this)">সলিড</button>
+        <button class="bg-tab ${s.bgMode==='gradient'?'active':''}" onclick="setBgMode('${mode}','gradient',this)">গ্রেডিয়েন্ট</button>
+        <button class="bg-tab ${s.bgMode==='image'?'active':''}" onclick="setBgMode('${mode}','image',this)">ছবি</button>
+      </div>
+      <div id="${mode}-bg-solid" style="display:${s.bgMode==='solid'?'block':'none'}">
+        <div class="color-swatches">${bgPresets.map(c=>`<div class="swatch${s.bgColor===c?' active':''}" style="background:${c}" onclick="setBgColor('${mode}','${c}',this)"></div>`).join('')}</div>
+        <div class="color-picker-row"><label>কাস্টম:</label><input type="color" value="${s.bgColor}" oninput="setBgColorCustom('${mode}',this.value)"></div>
+      </div>
+      <div id="${mode}-bg-gradient" style="display:${s.bgMode==='gradient'?'block':'none'}">
+        <div class="gradient-row">
+          <label style="font-size:12px;color:var(--text2)">রং ১:</label><input type="color" value="${s.bgGrad1}" oninput="setGrad('${mode}','grad1',this.value)">
+          <label style="font-size:12px;color:var(--text2)">রং ২:</label><input type="color" value="${s.bgGrad2}" oninput="setGrad('${mode}','grad2',this.value)">
+        </div>
+        <div class="control-row">
+          <span class="control-label">কোণ</span>
+          <input type="range" class="grad-angle" min="0" max="360" value="${s.bgGradAngle}" oninput="setGrad('${mode}','angle',this.value)">
+          <span class="control-value" id="${mode}-grad-angle-val">${toBn(s.bgGradAngle)}°</span>
+        </div>
+      </div>
+      <div id="${mode}-bg-image" style="display:${s.bgMode==='image'?'block':'none'}">
+        <label class="file-upload">
+          <input type="file" accept="image/*" onchange="loadBgImage('${mode}',this)">
+          📷 ছবি আপলোড করুন
+        </label>
+        <div class="control-row" style="margin-top:10px">
+          <span class="control-label">অন্ধকার করুন</span>
+          <input type="range" min="0" max="0.9" step="0.05" value="${s.bgDarken}" oninput="setDarken('${mode}',this.value)">
+          <span class="control-value" id="${mode}-darken-val">${Math.round(s.bgDarken*100)}%</span>
+        </div>
+      </div>
+    </div>
+    <div class="adv-section">
+      <div class="adv-section-title">টাইপোগ্রাফি</div>
+      <div class="color-swatches">${textPresets.map(c=>`<div class="swatch${s.textColor===c?' active':''}" style="background:${c};border:1px solid #333" onclick="setTextColor('${mode}','${c}',this)"></div>`).join('')}</div>
+      <div class="color-picker-row" style="margin-top:8px;margin-bottom:14px">
+        <label>কাস্টম টেক্সট রং:</label><input type="color" value="${s.textColor}" oninput="setTextColorCustom('${mode}',this.value)">
+      </div>
+      <div class="control-row">
+        <span class="control-label">ফন্ট সাইজ</span>
+        <input type="range" min="14" max="60" value="${s.fontSize}" id="${mode}-fontsize-slider" oninput="setFontSize('${mode}',this.value)">
+        <span class="control-value" id="${mode}-fontsize-val">${toBn(s.fontSize)}px</span>
+      </div>
+      <div style="margin-top:12px">
+        <div class="adv-section-title" style="margin-bottom:8px">ফন্ট স্টাইল</div>
+        <div class="font-grid">${fonts.map(f=>`<button class="font-btn${s.fontFamily===f.name?' active':''}" style="font-family:'${f.name}',sans-serif" onclick="setFont('${mode}','${f.name}',this)">${f.label}</button>`).join('')}</div>
+      </div>
+    </div>
+  `;
+}
+
+function toggleAdv(mode) {
+  const panel = document.getElementById(`${mode}-adv-panel`);
+  const arrow = document.getElementById(`${mode}-adv-arrow`);
+  panel.classList.toggle('open');
+  arrow.textContent = panel.classList.contains('open') ? '▲' : '▼';
+}
+
+// BG
+function setBgMode(mode, bgMode, el) {
+  state[mode].bgMode = bgMode;
+  el.closest('.bg-tabs').querySelectorAll('.bg-tab').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById(`${mode}-bg-solid`).style.display = bgMode==='solid'?'block':'none';
+  document.getElementById(`${mode}-bg-gradient`).style.display = bgMode==='gradient'?'block':'none';
+  document.getElementById(`${mode}-bg-image`).style.display = bgMode==='image'?'block':'none';
+  updatePreview(mode);
+}
+function setBgColor(mode, color, el) {
+  state[mode].bgColor = color;
+  el.closest('.color-swatches').querySelectorAll('.swatch').forEach(s=>s.classList.remove('active'));
+  el.classList.add('active');
+  updatePreview(mode);
+}
+function setBgColorCustom(mode, color) { state[mode].bgColor = color; updatePreview(mode); }
+function setGrad(mode, type, val) {
+  if (type==='grad1') state[mode].bgGrad1 = val;
+  else if (type==='grad2') state[mode].bgGrad2 = val;
+  else { state[mode].bgGradAngle = +val; const el = document.getElementById(`${mode}-grad-angle-val`); if(el) el.textContent = toBn(val)+'°'; }
+  updatePreview(mode);
+}
+function loadBgImage(mode, input) {
+  const file = input.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => { state[mode].bgImage = e.target.result; updatePreview(mode); };
+  reader.readAsDataURL(file);
+}
+function setDarken(mode, val) {
+  state[mode].bgDarken = +val;
+  const el = document.getElementById(`${mode}-darken-val`); if(el) el.textContent = Math.round(val*100)+'%';
+  updatePreview(mode);
+}
+// Typography
+function setTextColor(mode, color, el) {
+  state[mode].textColor = color;
+  el.closest('.color-swatches').querySelectorAll('.swatch').forEach(s=>s.classList.remove('active'));
+  el.classList.add('active');
+  updatePreview(mode);
+}
+function setTextColorCustom(mode, color) { state[mode].textColor = color; updatePreview(mode); }
+function setFontSize(mode, val) {
+  state[mode].fontSize = +val;
+  const el = document.getElementById(`${mode}-fontsize-val`); if(el) el.textContent = toBn(val)+'px';
+  updatePreview(mode);
+}
+function setFont(mode, font, el) {
+  state[mode].fontFamily = font;
+  el.closest('.font-grid').querySelectorAll('.font-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  updatePreview(mode);
+}
+
+// ===== SETTINGS PERSISTENCE =====
+function saveSettings(mode) {
+  localStorage.setItem(`newsapp_${mode}`, JSON.stringify(state[mode]));
+  showToast('সেটিংস সংরক্ষিত হয়েছে ✓');
+}
+function resetSettings(mode) {
+  Object.assign(state[mode], JSON.parse(JSON.stringify(defaults[mode])));
+  renderAdvPanel(mode);
+  if (mode==='scroll') { document.getElementById('scroll-speed').value=3; document.getElementById('scroll-spacing').value=2; updateScrollSettings(); }
+  if (mode==='slide') { document.getElementById('slide-duration').value=6; document.getElementById('slide-chars').value=200; updateSlideSettings(); }
+  updatePreview(mode);
+  showToast('ডিফল্ট সেটিংসে ফিরে যাওয়া হয়েছে');
+}
+function loadSettings(mode) {
+  const saved = localStorage.getItem(`newsapp_${mode}`);
+  if (saved) try { Object.assign(state[mode], JSON.parse(saved)); } catch(e) {}
+  if (mode==='scroll') {
+    document.getElementById('scroll-speed').value = state.scroll.speed;
+    document.getElementById('scroll-spacing').value = state.scroll.spacing;
+    updateScrollSettings();
+  }
+  if (mode==='slide') {
+    document.getElementById('slide-duration').value = state.slide.duration;
+    document.getElementById('slide-chars').value = state.slide.charsPerSlide;
+    updateSlideSettings();
+    // restore transition buttons
+    document.querySelectorAll('.trans-btn').forEach(b=>{
+      if (b.getAttribute('onclick')&&b.getAttribute('onclick').includes(`'${state.slide.transition}'`)) b.classList.add('active');
+      else b.classList.remove('active');
+    });
+    currentTransition = state.slide.transition;
+  }
+}
+
+function showToast(msg) {
+  let t = document.getElementById('toast');
+  if (!t) { t = document.createElement('div'); t.id='toast'; t.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--accent);color:#000;padding:10px 20px;border-radius:20px;font-weight:700;z-index:9999;font-size:13px;transition:opacity 0.4s'; document.body.appendChild(t); }
+  t.textContent = msg; t.style.opacity='1';
+  clearTimeout(t._timer);
+  t._timer = setTimeout(()=>t.style.opacity='0', 2000);
+}
+
+// ===== PLAYER =====
+let playerMode = null;
+let scrollAnimId = null, scrollPlaying = true;
+let scrollPos = 0, scrollSpeed = 3;
+let slideIndex = 0, slidePlaying = true, slideTimer = null, progressTimer = null;
+let slidePages = [];
+let hideControlsTimer = null;
+
+function startBroadcast(mode) {
+  const text = document.getElementById(`${mode}-input`).value;
+  if (!text.trim()) { showToast('প্রথমে লেখা দিন!'); return; }
+  playerMode = mode;
+  const overlay = document.getElementById('player-overlay');
+  overlay.classList.add('active');
+  document.getElementById('player-title-label').textContent = mode==='scroll'?'স্ক্রল টেক্সট':'স্লাইড শো';
+  
+  // Size frame
+  const frame = document.getElementById('player-frame');
+  const stage = document.getElementById('player-stage');
+  const ratio = sizeDefs[state[mode].size].ratio;
+  resizePlayerFrame(frame, stage, ratio);
+  window._playerRatio = ratio;
+  
+  // Apply bg
+  applyFrameStyle(frame, state[mode]);
+  
+  if (mode === 'scroll') {
+    setupScrollPlayer(text);
+  } else {
+    setupSlidePlayer(text);
+  }
+  
+  // Auto-hide controls
+  setupAutoHide();
+}
+
+function resizePlayerFrame(frame, stage, ratio) {
+  const sw = stage.clientWidth, sh = stage.clientHeight - 80;
+  let fw, fh;
+  if (ratio >= 1) { fw = Math.min(sw, sh * ratio); fh = fw / ratio; }
+  else { fh = Math.min(sh, sw / ratio); fw = fh * ratio; }
+  frame.style.width = fw + 'px';
+  frame.style.height = fh + 'px';
+  frame.style.borderRadius = '8px';
+}
+
+window.addEventListener('resize', () => {
+  if (!playerMode) return;
+  const frame = document.getElementById('player-frame');
+  const stage = document.getElementById('player-stage');
+  resizePlayerFrame(frame, stage, window._playerRatio || 9/16);
+});
+
+// SCROLL PLAYER
+function setupScrollPlayer(text) {
+  document.getElementById('scroll-player').style.display = 'block';
+  document.getElementById('slide-player').style.display = 'none';
+  document.getElementById('scroll-ctrl-panel').style.display = 'block';
+  document.getElementById('slide-ctrl-panel').style.display = 'none';
+  
+  const track = document.getElementById('scroll-track');
+  track.innerHTML = parseMarkdown(text) + parseMarkdown(text); // double for loop
+  
+  const s = state.scroll;
+  track.style.color = s.textColor;
+  track.style.fontFamily = s.fontFamily + ', sans-serif';
+  track.style.fontSize = s.fontSize + 'px';
+  track.style.lineHeight = (1.5 + s.spacing * 0.2).toString();
+  track.style.paddingBottom = '40px';
+  
+  scrollPos = document.getElementById('player-frame').clientHeight;
+  track.style.transform = `translateY(${scrollPos}px)`;
+  scrollSpeed = s.speed;
+  scrollPlaying = true;
+  document.getElementById('scroll-play-btn').textContent = '⏸';
+  document.getElementById('player-scroll-speed').value = s.speed;
+  
+  cancelAnimationFrame(scrollAnimId);
+  animateScroll();
+}
+
+function animateScroll() {
+  if (!scrollPlaying) { scrollAnimId = requestAnimationFrame(animateScroll); return; }
+  const track = document.getElementById('scroll-track');
+  const speed = scrollSpeed * 0.5;
+  scrollPos -= speed;
+  const half = track.scrollHeight / 2;
+  if (scrollPos < -half) scrollPos = document.getElementById('player-frame').clientHeight;
+  track.style.transform = `translateY(${scrollPos}px)`;
+  scrollAnimId = requestAnimationFrame(animateScroll);
+}
+
+function toggleScrollPlay() {
+  scrollPlaying = !scrollPlaying;
+  document.getElementById('scroll-play-btn').textContent = scrollPlaying ? '⏸' : '▶';
+}
+function updatePlayerScrollSpeed(v) { scrollSpeed = +v; }
+
+// SLIDE PLAYER
+function setupSlidePlayer(text) {
+  document.getElementById('scroll-player').style.display = 'none';
+  document.getElementById('slide-player').style.display = 'block';
+  document.getElementById('scroll-ctrl-panel').style.display = 'none';
+  document.getElementById('slide-ctrl-panel').style.display = 'block';
+  
+  slidePages = splitIntoSlides(text, state.slide.charsPerSlide);
+  slideIndex = 0;
+  slidePlaying = true;
+  document.getElementById('slide-play-btn').textContent = '⏸';
+  
+  renderSlides();
+  buildDots();
+  showSlide(0, null);
+  startSlideTimer();
+}
+
+function renderSlides() {
+  const wrapper = document.getElementById('slide-wrapper');
+  wrapper.innerHTML = '';
+  const s = state.slide;
+  slidePages.forEach((text, i) => {
+    const page = document.createElement('div');
+    page.className = 'slide-page' + (i===0?' active':'');
+    page.id = `slide-page-${i}`;
+    const inner = document.createElement('div');
+    inner.className = 'slide-text-inner rendered';
+    inner.innerHTML = parseMarkdown(text);
+    inner.style.color = s.textColor;
+    inner.style.fontFamily = s.fontFamily + ', sans-serif';
+    inner.style.fontSize = s.fontSize + 'px';
+    inner.style.textAlign = 'center';
+    page.appendChild(inner);
+    wrapper.appendChild(page);
+  });
+}
+
+function buildDots() {
+  const cont = document.getElementById('slide-dots');
+  cont.innerHTML = slidePages.map((_,i)=>`<span class="slide-dot${i===0?' active':''}" id="dot-${i}"></span>`).join('');
+}
+
+function showSlide(idx, exitDir) {
+  const s = state.slide;
+  slidePages.forEach((_, i) => {
+    const page = document.getElementById(`slide-page-${i}`);
+    if (!page) return;
+    if (i === idx) {
+      page.className = 'slide-page active';
+    } else if (exitDir !== null) {
+      let exitClass = 'slide-page';
+      if (s.transition === 'fade') exitClass += ' exit-right';
+      else if (s.transition === 'slide-left') exitClass += ` exit-left`;
+      else if (s.transition === 'zoom') exitClass += ' exit-zoom';
+      else if (s.transition === 'slide-top') exitClass += ' exit-top';
+      else if (s.transition === 'flip') exitClass += ' exit-flip';
+      else exitClass += ' exit-right';
+      if (i === exitDir) page.className = exitClass;
+      else page.className = 'slide-page';
+    } else {
+      page.className = 'slide-page';
+    }
+    document.querySelectorAll('.slide-dot').forEach((d,j)=>d.classList.toggle('active',j===idx));
+  });
+  document.getElementById('slide-counter').textContent = toBn(idx+1)+'/'+toBn(slidePages.length);
+  slideIndex = idx;
+  resetProgress();
+}
+
+function slideNext() {
+  const prev = slideIndex;
+  const next = (slideIndex + 1) % slidePages.length;
+  showSlide(next, prev);
+  if (slidePlaying) startSlideTimer();
+}
+function slidePrev() {
+  const prev = slideIndex;
+  const next = (slideIndex - 1 + slidePages.length) % slidePages.length;
+  showSlide(next, prev);
+  if (slidePlaying) startSlideTimer();
+}
+function toggleSlidePlay() {
+  slidePlaying = !slidePlaying;
+  document.getElementById('slide-play-btn').textContent = slidePlaying ? '⏸' : '▶';
+  if (slidePlaying) startSlideTimer(); else clearTimer();
+}
+
+let progressStart = null, progressDuration = 0;
+function startSlideTimer() {
+  clearTimer();
+  progressDuration = state.slide.duration * 1000;
+  progressStart = Date.now();
+  animateProgress();
+  slideTimer = setTimeout(slideNext, progressDuration);
+}
+function clearTimer() {
+  if (slideTimer) clearTimeout(slideTimer);
+  if (progressTimer) cancelAnimationFrame(progressTimer);
+}
+function resetProgress() { document.getElementById('progress-fill').style.width = '0%'; }
+function animateProgress() {
+  const fill = document.getElementById('progress-fill');
+  const elapsed = Date.now() - progressStart;
+  const pct = Math.min(100, (elapsed / progressDuration) * 100);
+  fill.style.width = pct + '%';
+  if (pct < 100 && slidePlaying) progressTimer = requestAnimationFrame(animateProgress);
+}
+
+// PLAYER CONTROLS HIDE
+function setupAutoHide() {
+  const overlay = document.getElementById('player-overlay');
+  overlay.addEventListener('click', showControls);
+  overlay.addEventListener('touchstart', showControls);
+  showControls();
+}
+function showControls() {
+  document.getElementById('player-top').classList.remove('hidden');
+  document.getElementById('player-controls').classList.remove('hidden');
+  clearTimeout(hideControlsTimer);
+  hideControlsTimer = setTimeout(() => {
+    document.getElementById('player-top').classList.add('hidden');
+    document.getElementById('player-controls').classList.add('hidden');
+  }, 4000);
+}
+
+function closePlayer() {
+  cancelAnimationFrame(scrollAnimId);
+  clearTimer();
+  document.getElementById('player-overlay').classList.remove('active');
+  document.getElementById('scroll-player').style.display = 'none';
+  document.getElementById('slide-player').style.display = 'none';
+  playerMode = null;
+  if (document.fullscreenElement) document.exitFullscreen();
+}
+
+function toggleFullscreen() {
+  const el = document.getElementById('player-overlay');
+  if (!document.fullscreenElement) {
+    if (el.requestFullscreen) el.requestFullscreen();
+    else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+  } else {
+    if (document.exitFullscreen) document.exitFullscreen();
+  }
+}
+
+// ===== UTILS =====
+function toBn(n) {
+  return String(n).replace(/[0-9]/g, d => '০১২৩৪৫৬৭৮৯'[d]);
+}
+
+// Init home
+document.getElementById('page-home').style.display = 'flex';
+</script>
+</body>
+</html>
